@@ -1,105 +1,131 @@
+#!/bin/env node
 //  OpenShift sample Node application
-var express = require('express'),
-    app     = express(),
-    morgan  = require('morgan');
+var express = require('express');
+var fs = require('fs');
+var mysql = require('mysql');
+var bodyParser = require('body-parser');
     
-Object.assign=require('object-assign')
+var SampleApp = function () {
+    
+    //  Scope.
+    var self = this;
+    self.setupVariables = function () {
+        //  Set the environment variables we need.
+        self.ipaddress = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
+        self.port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+        self.hostname = process.env.OPENSHIFT_MYSQL_DB_HOST || '127.0.0.1';
 
-app.engine('html', require('ejs').renderFile);
-app.use(morgan('combined'))
+        if (typeof self.ipaddress === "undefined") {
+            //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
+            //  allows us to run/test the app locally.
+            console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
+            self.ipaddress = "127.0.0.1";
+        }
+        ;
+    };
 
-var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
-    ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
-    mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
-    mongoURLLabel = "";
+    /**
+     *  Populate the cache.
+     */
+    self.populateCache = function () {
+        if (typeof self.zcache === "undefined") {
+            self.zcache = {'index.html': ''};
+        }
 
-if (mongoURL == null && process.env.DATABASE_SERVICE_NAME) {
-  var mongoServiceName = process.env.DATABASE_SERVICE_NAME.toUpperCase(),
-      mongoHost = process.env[mongoServiceName + '_SERVICE_HOST'],
-      mongoPort = process.env[mongoServiceName + '_SERVICE_PORT'],
-      mongoDatabase = process.env[mongoServiceName + '_DATABASE'],
-      mongoPassword = process.env[mongoServiceName + '_PASSWORD']
-      mongoUser = process.env[mongoServiceName + '_USER'];
+        //  Local cache for static content.
+        self.zcache['index.html'] = fs.readFileSync('./index.html');
+    };
 
-  if (mongoHost && mongoPort && mongoDatabase) {
-    mongoURLLabel = mongoURL = 'mongodb://';
-    if (mongoUser && mongoPassword) {
-      mongoURL += mongoUser + ':' + mongoPassword + '@';
-    }
-    // Provide UI label that excludes user id and pw
-    mongoURLLabel += mongoHost + ':' + mongoPort + '/' + mongoDatabase;
-    mongoURL += mongoHost + ':' +  mongoPort + '/' + mongoDatabase;
+    /**
+     *  Retrieve entry (content) from cache.
+     *  @param {string} key  Key identifying content to retrieve from cache.
+     */
+    self.cache_get = function (key) {
+        return self.zcache[key];
+    };
 
-  }
-}
-var db = null,
-    dbDetails = new Object();
 
-var initDb = function(callback) {
-  if (mongoURL == null) return;
+    /**
+     *  terminator === the termination handler
+     *  Terminate server on receipt of the specified signal.
+     *  @param {string} sig  Signal to terminate on.
+     */
+    self.terminator = function (sig) {
+        if (typeof sig === "string") {
+            console.log('%s: Received %s - terminating sample app ...',
+                    Date(Date.now()), sig);
+            pool.end();
+            process.exit(1);
+        }
+        console.log('%s: Node server stopped.', Date(Date.now()));
+    };
 
-  var mongodb = require('mongodb');
-  if (mongodb == null) return;
+    /**
+     *  Setup termination handlers (for exit and a list of signals).
+     */
+    self.setupTerminationHandlers = function () {
+        //  Process on exit and signals.
+        process.on('exit', function () {
+            self.terminator();
+        });
 
-  mongodb.connect(mongoURL, function(err, conn) {
-    if (err) {
-      callback(err);
-      return;
-    }
+        // Removed 'SIGPIPE' from the list - bugz 852598.
+        ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
+            'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
+        ].forEach(function (element, index, array) {
+            process.on(element, function () {
+                self.terminator(element);
+            });
+        });
+    };
 
-    db = conn;
-    dbDetails.databaseName = db.databaseName;
-    dbDetails.url = mongoURLLabel;
-    dbDetails.type = 'MongoDB';
+    /**
+     *  Initialize the server (express) and create the routes and register
+     *  the handlers.
+     */
+    self.initializeServer = function () {
+        //self.app = express.createServer();       
+        self.app = express();
+        self.app.use(bodyParser.urlencoded({extended: false}));
+        self.app.use(bodyParser.json());
+        // GET method route
+        self.app.get('/', function (req, res) {
+            res.send('Received request');
+        });
+        
 
-    console.log('Connected to MongoDB at: %s', mongoURL);
-  });
-};
 
-app.get('/', function (req, res) {
-  // try to initialize the db on every request if it's not already
-  // initialized.
-  if (!db) {
-    initDb(function(err){});
-  }
-  if (db) {
-    var col = db.collection('counts');
-    // Create a document with request IP and current time of request
-    col.insert({ip: req.ip, date: Date.now()});
-    col.count(function(err, count){
-      res.render('index.html', { pageCountMessage : count, dbInfo: dbDetails });
-    });
-  } else {
-    res.render('index.html', { pageCountMessage : null});
-  }
-});
+    };
 
-app.get('/pagecount', function (req, res) {
-  // try to initialize the db on every request if it's not already
-  // initialized.
-  if (!db) {
-    initDb(function(err){});
-  }
-  if (db) {
-    db.collection('counts').count(function(err, count ){
-      res.send('{ pageCount: ' + count + '}');
-    });
-  } else {
-    res.send('{ pageCount: -1 }');
-  }
-});
+    /**
+     *  Initializes the sample application.
+     */
+    self.initialize = function () {
+        self.setupVariables();
+        self.populateCache();
+        self.setupTerminationHandlers();
 
-// error handling
-app.use(function(err, req, res, next){
-  console.error(err.stack);
-  res.status(500).send('Something bad happened!');
-});
+        // Create the express server and routes.
+        self.initializeServer();
+    };
 
-initDb(function(err){
-  console.log('Error connecting to Mongo. Message:\n'+err);
-});
 
-app.listen(port, ip);
-console.log('Server running on http://%s:%s', ip, port);
+    /**
+     *  Start the server (starts up the sample application).
+     */
+    self.start = function () {
+        //  Start the app on the specific interface (and port).
+        self.app.listen(self.port, self.ipaddress, function () {
+            console.log('%s: Node server started on %s:%d ...',
+                    Date(Date.now()), self.ipaddress, self.port);
+        });
+    };
 
-module.exports = app ;
+};   /*  Sample Application.  */
+
+/**
+ *  main():  Main code.
+ */
+var zapp = new SampleApp();
+zapp.initialize();
+zapp.start();
