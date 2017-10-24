@@ -1,4 +1,3 @@
-node-echo
-=========
+The OpenShift `nodejs` cartridge documentation can be found at:
 
-node.js echo server, returns request data to response
+http://openshift.github.io/documentation/oo_cartridge_guide.html#nodejs
