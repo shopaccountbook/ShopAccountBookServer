@@ -1080,8 +1080,8 @@ var connection = mysql.createConnection({
     self.start = function () {
         //  Start the app on the specific interface (and port).
         self.app.listen(self.port, self.ipaddress, function () {
-            console.log('%s: Node server started on %s:%d ...',
-                    Date(Date.now()), self.ipaddress, self.port);
+            console.log('%s %s: Node server started on %s:%d ...',
+                    Date(Date.now()),process.env.MYSQL_DB_HOST, self.ipaddress, self.port);
         });
     };
 
