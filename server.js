@@ -715,7 +715,7 @@ var configSettings = function () {
                                 //if (Array.isArray(rows[i]))
                                     records.tranData.push(rows[i]);
                             }
-                            res.end('{"status":"pass", "output":"1", "data":' + JSON.stringify(records.tranData) + '}');
+                            res.end('{"status":"pass", "output":"1", "data":' + JSON.stringify(rows) + '}');
                         }
                         else
                         {
