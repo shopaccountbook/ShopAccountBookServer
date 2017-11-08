@@ -712,7 +712,7 @@ var configSettings = function () {
                             var records = {tranData: []};
                             for (i = 0; i < rows.length; i++)
                             {
-                                if (Array.isArray(rows[i]))
+                                //if (Array.isArray(rows[i]))
                                     records.tranData.push(rows[i]);
                             }
                             res.end('{"status":"pass", "output":"1", "data":' + JSON.stringify(records.tranData) + '}');
