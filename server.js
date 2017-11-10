@@ -937,8 +937,8 @@ var SampleApp = function () {
     };
 var connection = mysql.createConnection({
         host: process.env.MYSQL_DB_HOST,
-        user: 'process.env.MYSQL_USER',
-        password: 'process.env.MYSQL_PASSWORD',
+        user: 'process.env.MYSQL_ROOT_USER',
+        password: 'process.env.MYSQL_ROOT_PASSWORD',
         database: 'process.env.OPENSHIFT_GEAR_NAME'
     });
  
@@ -946,8 +946,8 @@ var connection = mysql.createConnection({
         connectionLimit: 10,
         waitForConnections: true,
         host: process.env.MYSQL_DB_HOST,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASSWORD,
+        user: process.env.MYSQL_ROOT_USER,
+        password: process.env.MYSQL_ROOT_PASSWORD,
         database: process.env.MYSQL_DATABASE,
         port: process.env.MYSQL_DB_PORT,
         multipleStatements: true
@@ -1081,7 +1081,7 @@ var connection = mysql.createConnection({
         //  Start the app on the specific interface (and port).
         self.app.listen(self.port, self.ipaddress, function () {
             console.log('%s %s: Node server started on %s:%d ...',
-                    Date(Date.now()),process.env.MYSQL_DB_HOST, self.ipaddress, self.port);
+                    Date(Date.now()),process.env.MYSQL_ROOT_PASSWORD, self.ipaddress, self.port);
         });
     };
 
