@@ -143,8 +143,7 @@ var userProfile = function () {
                         res.end('{"status":"fail", "output":' + err + '}');
                     else
                     {
-console.log('%s %s: ',Date(Date.now)),'Method userSignIn '+JSON.stringify(fields)+JSON.stringify(rows));
-        });
+console.log('%s %s: ',Date(Date.now()),'Method userSignIn '+JSON.stringify(fields)+JSON.stringify(rows));
 
                         if (rows.length > 0)
                         {
