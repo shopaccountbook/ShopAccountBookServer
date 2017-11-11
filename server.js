@@ -143,6 +143,9 @@ var userProfile = function () {
                         res.end('{"status":"fail", "output":' + err + '}');
                     else
                     {
+console.log('%s %s: ',Date(Date.now)),'Method userSignIn '+JSON.stringify(fields)+JSON.stringify(rows));
+        });
+
                         if (rows.length > 0)
                         {
                             res.end('{"status":"pass", "output":"1", "data":' + JSON.stringify(rows) + '}');
@@ -946,8 +949,8 @@ var connection = mysql.createConnection({
         connectionLimit: 10,
         waitForConnections: true,
         host: process.env.MYSQL_DB_HOST,
-        user: process.env.MYSQL_ROOT_USER,
-        password: process.env.MYSQL_ROOT_PASSWORD,
+        user: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DATABASE,
         port: process.env.MYSQL_DB_PORT,
         multipleStatements: true
