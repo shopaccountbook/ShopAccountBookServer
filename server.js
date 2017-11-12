@@ -143,8 +143,6 @@ var userProfile = function () {
                         res.end('{"status":"fail", "output":' + err + '}');
                     else
                     {
-console.log('%s %s: ',Date(Date.now()),'Method userSignIn '+JSON.stringify(fields)+JSON.stringify(rows));
-
                         if (rows.length > 0)
                         {
                             res.end('{"status":"pass", "output":"1", "data":' + JSON.stringify(rows) + '}');
@@ -714,10 +712,10 @@ var configSettings = function () {
                             var records = {tranData: []};
                             for (i = 0; i < rows.length; i++)
                             {
-                                //if (Array.isArray(rows[i]))
+                                if (Array.isArray(rows[i]))
                                     records.tranData.push(rows[i]);
                             }
-                            res.end('{"status":"pass", "output":"1", "data":' + JSON.stringify(rows) + '}');
+                            res.end('{"status":"pass", "output":"1", "data":' + JSON.stringify(records.tranData) + '}');
                         }
                         else
                         {
@@ -802,6 +800,7 @@ var synchDataOperations = function () {
     var self = this;
     self.getBaseData = function (req, res, pool) {
         try {
+console.log(' userphone=%s ',req.body.userPhone);
             res.setHeader('Content-Type', 'text/plain');
             pool.getConnection(function (err, connection) {
                 connection.query({sql: "SET @p0 =" + "'" + req.body.userPhone + "'" + ",@p1 =" + "'" + req.body.invoiceCount + "'" + "; CALL getBaseTableData(@p0,@p1,@status); SELECT @status as 'status';", timeout: 10000}, function (err, rows, fields) {
