@@ -137,8 +137,8 @@ var userProfile = function () {
     {
         try {
             res.setHeader('Content-Type', 'text/plain');
-          console.log('Request: %s Body: %s',
-                    JSON.stringify(req),JSON.stringify(req.body));
+          console.log('Request:Body: %s',
+                    JSON.stringify(req.body));
             pool.getConnection(function (err, connection) {
                 connection.query({sql: 'SELECT UserProfileID, name, phone, email, address, password, CONVERT(photo USING utf8) as photo, isActive, ExpiredOn, securePin, deviceId, TS FROM tb_userProfile where phone=' + "'" + req.body.phone + "'" + ' and password=' + "'" + req.body.password + "'" + ' and isActive=1;', timeout: 10000}, function (err, rows, fields) {
                     if (err)
