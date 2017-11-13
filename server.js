@@ -138,7 +138,7 @@ var userProfile = function () {
         try {
             res.setHeader('Content-Type', 'text/plain');
           console.log('Request:Body: %s',
-                    JSON.stringify(req.body));
+                    JSON.stringify(req.body));console.log(req);
             pool.getConnection(function (err, connection) {
                 connection.query({sql: 'SELECT UserProfileID, name, phone, email, address, password, CONVERT(photo USING utf8) as photo, isActive, ExpiredOn, securePin, deviceId, TS FROM tb_userProfile where phone=' + "'" + req.body.phone + "'" + ' and password=' + "'" + req.body.password + "'" + ' and isActive=1;', timeout: 10000}, function (err, rows, fields) {
                     if (err)
@@ -966,8 +966,16 @@ var connection = mysql.createConnection({
         //self.app = express.createServer();       
         self.app = express();
         self.app.use(bodyParser.urlencoded({extended: false}));
-      var jsonParser = bodyParser.json();
-        self.app.use(bodyParser.json());
+      // parse various different custom JSON types as JSON
+self.app.use(bodyParser.json({ type: 'application/*+json' }))
+ 
+// parse some custom thing into a Buffer
+self.app.use(bodyParser.raw({ type: 'application/vnd.custom-type' }))
+ 
+// parse an HTML body into a string
+self.app.use(bodyParser.text({ type: 'text/html' }))
+      
+        //self.app.use(bodyParser.json());
         // GET method route
         self.app.get('/', function (req, res) {
             res.send('Received request');
@@ -975,7 +983,7 @@ var connection = mysql.createConnection({
         self.app.get('/db', function (req, res) {
             res.send('DB connection');
         });
-        self.app.post('/authenticate',jsonParser, function (req, res) {
+        self.app.post('/authenticate', function (req, res) {
             //res.end(req.body.phone);
             userProfileObj.userSignIn(req, res, pool);
         });
@@ -1084,8 +1092,8 @@ var connection = mysql.createConnection({
     self.start = function () {
         //  Start the app on the specific interface (and port).
         self.app.listen(self.port, self.ipaddress, function () {
-            console.log('%s %s: Node server started on %s:%d ...',
-                    Date(Date.now()),process.env.MYSQL_ROOT_PASSWORD, self.ipaddress, self.port);
+            console.log(' %s: Node server started on %s:%d ...',
+                    Date(Date.now()), self.ipaddress, self.port);
         });
     };
 
