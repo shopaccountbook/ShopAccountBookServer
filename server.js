@@ -138,7 +138,7 @@ var userProfile = function () {
         try {
             res.setHeader('Content-Type', 'text/plain');
           console.log('Request:Body: %s',
-                    JSON.stringify(req.body));console.log(req);
+                    JSON.stringify(req.body));
             pool.getConnection(function (err, connection) {
                 connection.query({sql: 'SELECT UserProfileID, name, phone, email, address, password, CONVERT(photo USING utf8) as photo, isActive, ExpiredOn, securePin, deviceId, TS FROM tb_userProfile where phone=' + "'" + req.body.phone + "'" + ' and password=' + "'" + req.body.password + "'" + ' and isActive=1;', timeout: 10000}, function (err, rows, fields) {
                     if (err)
@@ -966,14 +966,11 @@ var connection = mysql.createConnection({
         //self.app = express.createServer();       
         self.app = express();
         self.app.use(bodyParser.urlencoded({extended: false}));
-      // parse various different custom JSON types as JSON
-self.app.use(bodyParser.json({ type: 'application/*+json' }))
- 
-// parse some custom thing into a Buffer
-self.app.use(bodyParser.raw({ type: 'application/vnd.custom-type' }))
- 
-// parse an HTML body into a string
-self.app.use(bodyParser.text({ type: 'text/html' }))
+      // create application/json parser
+var jsonParser = bodyParser.json()
+
+// create application/x-www-form-urlencoded parser
+var urlencodedParser = bodyParser.urlencoded({ extended: false })
       
         //self.app.use(bodyParser.json());
         // GET method route
@@ -983,7 +980,7 @@ self.app.use(bodyParser.text({ type: 'text/html' }))
         self.app.get('/db', function (req, res) {
             res.send('DB connection');
         });
-        self.app.post('/authenticate', function (req, res) {
+        self.app.post('/authenticate',urlencodedParser, function (req, res) {
             //res.end(req.body.phone);
             userProfileObj.userSignIn(req, res, pool);
         });
