@@ -980,7 +980,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
         self.app.get('/db', function (req, res) {
             res.send('DB connection');
         });
-        self.app.post('/authenticate',urlencodedParser, function (req, res) {
+        self.app.post('/authenticate',jsonParser, function (req, res) {
             //res.end(req.body.phone);
             userProfileObj.userSignIn(req, res, pool);
         });
