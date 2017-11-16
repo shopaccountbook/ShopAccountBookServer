@@ -984,87 +984,87 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
             //res.end(req.body.phone);
             userProfileObj.userSignIn(req, res, pool);
         });
-        self.app.post('/updDevice', function (req, res) {
+        self.app.post('/updDevice',jsonParser, function (req, res) {
             //res.end(req.body.phone);
             userProfileObj.userUpdDevice(req, res, pool);
         });
-        self.app.post('/signUP', function (req, res) {
+        self.app.post('/signUP',jsonParser, function (req, res) {
             userProfileObj.userSignUp(req, res, pool);
         });
-        self.app.post('/updPwd', function (req, res) {
+        self.app.post('/updPwd',jsonParser, function (req, res) {
             userProfileObj.updatePassword(req, res, pool);
         });
-        self.app.post('/updPhone', function (req, res) {
+        self.app.post('/updPhone',jsonParser, function (req, res) {
             userProfileObj.updatePhone(req, res, pool);
         });
-        self.app.post('/updCustomer', function (req, res) {
+        self.app.post('/updCustomer',jsonParser, function (req, res) {
             custProfileObj.saveCustomer(req, res, pool);
         });
-        self.app.post('/updSupplier', function (req, res) {
+        self.app.post('/updSupplier',jsonParser, function (req, res) {
             suppProfileObj.saveSupplier(req, res, pool);
         });
-        self.app.post('/updInventory', function (req, res) {
+        self.app.post('/updInventory',jsonParser, function (req, res) {
             inventoryObj.saveInventory(req, res, pool);
         });
-        self.app.post('/cpInventory', function (req, res) {
+        self.app.post('/cpInventory',jsonParser, function (req, res) {
             inventoryObj.copyInventory(req, res, pool);
         });
-        self.app.post('/makeInvoice', function (req, res) {
+        self.app.post('/makeInvoice',jsonParser, function (req, res) {
             invoiceObj.createInvoice(req, res, pool);
         });
-        self.app.post('/makeInvoiceItem', function (req, res) {
+        self.app.post('/makeInvoiceItem',jsonParser, function (req, res) {
             invoiceObj.createInvoiceItem(req, res, pool);
         });
-        self.app.post('/getInvoiceItem', function (req, res) {
+        self.app.post('/getInvoiceItem',jsonParser, function (req, res) {
             invoiceObj.getInvoiceItem(req, res, pool);
         });
-        self.app.post('/deleteInvoice', function (req, res) {
+        self.app.post('/deleteInvoice',jsonParser, function (req, res) {
             invoiceObj.deleteInvoice(req, res, pool);
         });
-        self.app.post('/getInvoice', function (req, res) {
+        self.app.post('/getInvoice',jsonParser, function (req, res) {
             invoiceObj.getInvoice(req, res, pool);
         });
-        self.app.post('/saveTran', function (req, res) {
+        self.app.post('/saveTran',jsonParser, function (req, res) {
             tranObj.saveTransaction(req, res, pool);
         });
-        self.app.post('/getTran', function (req, res) {
+        self.app.post('/getTran',jsonParser, function (req, res) {
             tranObj.getTransaction(req, res, pool);
         });
-        self.app.post('/getTranDate', function (req, res) {
+        self.app.post('/getTranDate',jsonParser, function (req, res) {
             tranObj.getTransactionByDate(req, res, pool);
         });
 
-        self.app.post('/getPayableAmt', function (req, res) {
+        self.app.post('/getPayableAmt',jsonParser, function (req, res) {
             tranObj.getPayableAmt(req, res, pool);
         });
-        self.app.post('/getReceivableAmt', function (req, res) {
+        self.app.post('/getReceivableAmt',jsonParser, function (req, res) {
             tranObj.getReceivableAmt(req, res, pool);
         });
-        self.app.post('/getListPR', function (req, res) {
+        self.app.post('/getListPR',jsonParser, function (req, res) {
             tranObj.getListPayabaleReceivable(req, res, pool);
         });
-        self.app.post('/saveCS', function (req, res) {
+        self.app.post('/saveCS',jsonParser, function (req, res) {
             cofigObj.saveConfigSetting(req, res, pool);
         });
-        self.app.post('/getCS', function (req, res) {
+        self.app.post('/getCS',jsonParser, function (req, res) {
             cofigObj.getConfigSetting(req, res, pool);
         });
-        self.app.post('/getBTD', function (req, res) {
+        self.app.post('/getBTD',jsonParser, function (req, res) {
             synchObj.getBaseData(req, res, pool);
         });
-        self.app.post('/getRecCntSync', function (req, res) {
+        self.app.post('/getRecCntSync',jsonParser, function (req, res) {
             synchObj.getRecCountToSynch(req, res, pool);
         });
-        self.app.post('/getRecSync', function (req, res) {
+        self.app.post('/getRecSync',jsonParser, function (req, res) {
             synchObj.getRecordToSynch(req, res, pool);
         });
-        self.app.post('/printReq', function (req, res) {
+        self.app.post('/printReq',jsonParser, function (req, res) {
             printObj.createPrintRequest(req, res, pool);
         });
-        self.app.get('/getprintCharg', function (req, res) {
+        self.app.get('/getprintCharg',jsonParser, function (req, res) {
             printObj.getPrintCharges(req, res, pool);
         });
-        self.app.post('/cleanInvDet', function (req, res) {
+        self.app.post('/cleanInvDet',jsonParser, function (req, res) {
             userProfileObj.cleanInvoiceDetail(req, res, pool);
         });
         
